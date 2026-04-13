@@ -1,0 +1,17 @@
+---
+name: Qualify Code (reusable)
+
+permissions:
+  contents: read
+
+"on":
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  call-common-uv-qualify:
+    uses: Seika139/.github/.github/workflows/uv-qualify.yml@main
+    with:
+      python-version: "3.14"
+    secrets: inherit

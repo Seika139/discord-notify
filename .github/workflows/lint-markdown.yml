@@ -1,0 +1,17 @@
+---
+name: Lint Markdown (reusable)
+
+"on":
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  actions: read
+  contents: write
+  pull-requests: read
+
+jobs:
+  call-common-markdownlint:
+    uses: Seika139/.github/.github/workflows/lint-markdown.yml@main
+    secrets: inherit
