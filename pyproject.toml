@@ -1,6 +1,6 @@
 [project]
 name = "discord-notify"
-version = "0.1.0"
+version = "0.1.1"
 description = "Minimal Discord webhook client with zero external dependencies"
 requires-python = ">=3.12"
 
@@ -18,5 +18,15 @@ select = ["E", "F", "I", "W", "UP"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 
+[tool.mypy]
+python_version = "3.14"
+strict = true
+exclude = ["^build/", "^\\.venv/"]
+
 [dependency-groups]
-dev = ["pytest>=8.0", "ruff>=0.11"]
+dev = [
+    "mypy>=1.18",
+    "pytest>=8.0",
+    "ruff>=0.11",
+    "ty>=0.0.14",
+]

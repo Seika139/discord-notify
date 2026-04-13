@@ -7,6 +7,7 @@ import logging
 import urllib.error
 import urllib.request
 from dataclasses import dataclass, field
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -35,8 +36,8 @@ class Embed:
         self.fields.append({"name": name, "value": value, "inline": inline})
         return self
 
-    def to_dict(self) -> dict:
-        d: dict = {}
+    def to_dict(self) -> dict[str, Any]:
+        d: dict[str, Any] = {}
         if self.title:
             d["title"] = self.title
         if self.description:
@@ -67,9 +68,9 @@ class DiscordWebhook:
         self,
         content: str = "",
         embeds: list[Embed] | None = None,
-    ) -> dict:
+    ) -> dict[str, Any]:
         """Build the JSON payload without sending it. Useful for testing."""
-        payload: dict = {}
+        payload: dict[str, Any] = {}
         if content:
             payload["content"] = content
         if self.username:
@@ -94,7 +95,7 @@ class DiscordWebhook:
         )
         try:
             with urllib.request.urlopen(req, timeout=self.timeout) as resp:
-                return resp.status
+                return int(resp.status)
         except urllib.error.HTTPError as e:
             logger.error("Discord webhook failed: %s %s", e.code, e.reason)
             raise
