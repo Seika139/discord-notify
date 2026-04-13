@@ -9,11 +9,14 @@
 
 ## Tagged Releases
 
-- [unreleased](https://github.com/Seika139/discord-notify/compare/v0.1.1...HEAD)
+- [unreleased](https://github.com/Seika139/discord-notify/compare/v0.1.2...HEAD)
+- [0.1.2](https://github.com/Seika139/discord-notify/compare/v0.1.1...v0.1.2)
 - [0.1.1](https://github.com/Seika139/discord-notify/compare/v0.1.0...v0.1.1)
 - [0.1.0](https://github.com/Seika139/discord-notify/releases/tag/v0.1.0)
 
 ## [Unreleased]
+
+## [0.1.2] - 2026-04-14
 
 ### Added
 
