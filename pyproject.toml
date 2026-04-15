@@ -15,6 +15,21 @@ line-length = 100
 [tool.ruff.lint]
 select = ["E", "F", "I", "W", "UP"]
 
+[tool.rumdl]
+respect_gitignore = true
+exclude = [".claude/**"]
+disable = [
+    "MD013", # 行の長さは自由
+    "MD024", # 重複した見出しを許可
+    "MD025", # 複数のトップレベル見出しを許可
+    "MD033", # HTML タグを許可
+    "MD036", # 強調表示の過剰使用を許可
+    "MD041", # ファイルの最初の行を見出しにする必要なし
+]
+
+[tool.rumdl.MD009]
+strict = true
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 
@@ -24,9 +39,4 @@ strict = true
 exclude = ["^build/", "^\\.venv/"]
 
 [dependency-groups]
-dev = [
-    "mypy>=1.18",
-    "pytest>=8.0",
-    "ruff>=0.11",
-    "ty>=0.0.14",
-]
+dev = ["mypy>=1.18", "pytest>=8.0", "ruff>=0.11", "ty>=0.0.14"]
