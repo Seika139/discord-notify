@@ -90,7 +90,10 @@ class DiscordWebhook:
         req = urllib.request.Request(
             self.url,
             data=data,
-            headers={"Content-Type": "application/json"},
+            headers={
+                "Content-Type": "application/json",
+                "User-Agent": "discord-notify/0.1",
+            },
             method="POST",
         )
         try:
