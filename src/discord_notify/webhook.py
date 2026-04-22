@@ -59,7 +59,9 @@ class DiscordWebhook:
         webhook.send(embeds=[Embed(title="Alert", color=COLOR_ERROR)])
     """
 
-    def __init__(self, url: str, *, username: str | None = None, timeout: int = 10) -> None:
+    def __init__(
+        self, url: str, *, username: str | None = None, timeout: int = 10
+    ) -> None:
         self.url = url
         self.username = username
         self.timeout = timeout
@@ -92,7 +94,7 @@ class DiscordWebhook:
             data=data,
             headers={
                 "Content-Type": "application/json",
-                "User-Agent": "discord-notify/0.1",
+                "User-Agent": "discord-notify/0.1.3",
             },
             method="POST",
         )
