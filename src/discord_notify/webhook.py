@@ -94,6 +94,10 @@ class DiscordWebhook:
     ) -> int:
         """Send a message to Discord. Returns the HTTP status code."""
         payload = self.build_payload(content, embeds)
+        return self._post(payload)
+
+    def _post(self, payload: dict[str, Any]) -> int:
+        """POST a single prebuilt payload to the webhook URL. Returns the HTTP status code."""
         data = json.dumps(payload).encode()
         req = urllib.request.Request(
             self.url,
