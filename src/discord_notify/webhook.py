@@ -7,7 +7,7 @@ import logging
 import urllib.error
 import urllib.request
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import UTC, datetime
 from importlib.metadata import PackageNotFoundError, version
 from typing import Any
 
@@ -45,12 +45,14 @@ class Embed:
     fluent setter で組み立てる。
     """
 
+    # 既存の公開フィールド順 (title, description, color, fields) は positional 構築の
+    # 後方互換のため維持する。新しい任意フィールドは必ずこの後ろに足す。
     title: str = ""
     description: str = ""
-    url: str = ""
     color: int | None = None
-    timestamp: str | None = None
     fields: list[dict[str, str | bool]] = field(default_factory=list)
+    url: str = ""
+    timestamp: str | None = None
     author: dict[str, str] | None = None
     footer: dict[str, str] | None = None
     thumbnail: dict[str, str] | None = None
@@ -89,8 +91,18 @@ class Embed:
         return self
 
     def set_timestamp(self, value: str | datetime) -> Embed:
-        """timestamp を設定する。datetime を渡すと ISO8601 文字列に変換する。"""
-        self.timestamp = value.isoformat() if isinstance(value, datetime) else value
+        """timestamp を設定する。datetime を渡すと ISO8601 文字列に変換する。
+
+        aware な datetime は元のタイムゾーン (オフセット) を保持する。naive な
+        datetime はオフセットが付かず Discord が 400 を返すため、UTC を補ってから
+        変換する。文字列はそのまま設定する。
+        """
+        if isinstance(value, datetime):
+            if value.tzinfo is None:
+                value = value.replace(tzinfo=UTC)
+            self.timestamp = value.isoformat()
+        else:
+            self.timestamp = value
         return self
 
     def to_dict(self) -> dict[str, Any]:

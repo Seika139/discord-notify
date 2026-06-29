@@ -35,10 +35,32 @@ class TestEmbed:
         assert d["url"] == "https://example.com/event"
         assert d["timestamp"] == "2026-06-29T13:15:00+09:00"
 
+    def test_positional_constructor_compatibility(self) -> None:
+        # 旧来の positional 構築 Embed(title, description, color) を壊さない
+        e = Embed("T", "D", COLOR_INFO)
+        d = e.to_dict()
+        assert d["color"] == COLOR_INFO
+        assert "url" not in d
+
     def test_set_timestamp_accepts_datetime(self) -> None:
         from datetime import UTC, datetime
 
         e = Embed().set_timestamp(datetime(2026, 6, 29, 13, 15, tzinfo=UTC))
+        assert e.to_dict()["timestamp"] == "2026-06-29T13:15:00+00:00"
+
+    def test_set_timestamp_preserves_aware_offset(self) -> None:
+        # aware な datetime はオフセットを保持する (例: JST +09:00)
+        from datetime import datetime, timedelta, timezone
+
+        jst = timezone(timedelta(hours=9))
+        e = Embed().set_timestamp(datetime(2026, 6, 29, 13, 15, tzinfo=jst))
+        assert e.to_dict()["timestamp"] == "2026-06-29T13:15:00+09:00"
+
+    def test_set_timestamp_naive_gets_utc(self) -> None:
+        # naive な datetime は UTC を補ってオフセット付きにする
+        from datetime import datetime
+
+        e = Embed().set_timestamp(datetime(2026, 6, 29, 13, 15))
         assert e.to_dict()["timestamp"] == "2026-06-29T13:15:00+00:00"
 
     def test_set_author_omits_empty_subfields(self) -> None:
