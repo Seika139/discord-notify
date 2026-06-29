@@ -29,6 +29,70 @@ class TestEmbed:
         result = e.add_field("a", "b")
         assert result is e
 
+    def test_url_and_timestamp(self) -> None:
+        e = Embed(title="T", url="https://example.com/event", timestamp="2026-06-29T13:15:00+09:00")
+        d = e.to_dict()
+        assert d["url"] == "https://example.com/event"
+        assert d["timestamp"] == "2026-06-29T13:15:00+09:00"
+
+    def test_positional_constructor_compatibility(self) -> None:
+        # 旧来の positional 構築 Embed(title, description, color) を壊さない
+        e = Embed("T", "D", COLOR_INFO)
+        d = e.to_dict()
+        assert d["color"] == COLOR_INFO
+        assert "url" not in d
+
+    def test_set_timestamp_accepts_datetime(self) -> None:
+        from datetime import UTC, datetime
+
+        e = Embed().set_timestamp(datetime(2026, 6, 29, 13, 15, tzinfo=UTC))
+        assert e.to_dict()["timestamp"] == "2026-06-29T13:15:00+00:00"
+
+    def test_set_timestamp_preserves_aware_offset(self) -> None:
+        # aware な datetime はオフセットを保持する (例: JST +09:00)
+        from datetime import datetime, timedelta, timezone
+
+        jst = timezone(timedelta(hours=9))
+        e = Embed().set_timestamp(datetime(2026, 6, 29, 13, 15, tzinfo=jst))
+        assert e.to_dict()["timestamp"] == "2026-06-29T13:15:00+09:00"
+
+    def test_set_timestamp_naive_gets_utc(self) -> None:
+        # naive な datetime は UTC を補ってオフセット付きにする
+        from datetime import datetime
+
+        e = Embed().set_timestamp(datetime(2026, 6, 29, 13, 15))
+        assert e.to_dict()["timestamp"] == "2026-06-29T13:15:00+00:00"
+
+    def test_set_author_omits_empty_subfields(self) -> None:
+        e = Embed().set_author("ASOBI", icon_url="https://example.com/i.png")
+        assert e.to_dict()["author"] == {"name": "ASOBI", "icon_url": "https://example.com/i.png"}
+
+    def test_set_footer(self) -> None:
+        e = Embed().set_footer("最終更新")
+        assert e.to_dict()["footer"] == {"text": "最終更新"}
+
+    def test_set_thumbnail_and_image(self) -> None:
+        e = (
+            Embed()
+            .set_thumbnail("https://example.com/t.png")
+            .set_image("https://example.com/b.png")
+        )
+        d = e.to_dict()
+        assert d["thumbnail"] == {"url": "https://example.com/t.png"}
+        assert d["image"] == {"url": "https://example.com/b.png"}
+
+    def test_setters_return_self(self) -> None:
+        e = Embed()
+        assert e.set_author("a") is e
+        assert e.set_footer("f") is e
+        assert e.set_thumbnail("u") is e
+        assert e.set_image("u") is e
+        assert e.set_timestamp("2026-06-29T00:00:00+00:00") is e
+
+    def test_optional_fields_omitted_when_unset(self) -> None:
+        # 設定しなければ payload に現れない (後方互換)
+        assert Embed(title="T").to_dict() == {"title": "T"}
+
 
 class TestDiscordWebhook:
     def test_build_payload_content_only(self) -> None:
