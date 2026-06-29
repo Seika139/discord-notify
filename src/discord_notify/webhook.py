@@ -7,9 +7,17 @@ import logging
 import urllib.error
 import urllib.request
 from dataclasses import dataclass, field
+from importlib.metadata import PackageNotFoundError, version
 from typing import Any
 
 logger = logging.getLogger(__name__)
+
+try:
+    __version__ = version("discord-notify")
+except PackageNotFoundError:  # ソース直実行などで未インストールの場合
+    __version__ = "0.0.0+unknown"
+
+USER_AGENT = f"discord-notify/{__version__}"
 
 # Discord embed color presets
 COLOR_SUCCESS = 0x2ECC71  # green
@@ -92,7 +100,7 @@ class DiscordWebhook:
             data=data,
             headers={
                 "Content-Type": "application/json",
-                "User-Agent": "discord-notify/0.1",
+                "User-Agent": USER_AGENT,
             },
             method="POST",
         )
