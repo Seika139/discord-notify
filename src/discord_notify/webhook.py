@@ -7,6 +7,7 @@ import logging
 import urllib.error
 import urllib.request
 from dataclasses import dataclass, field
+from datetime import datetime
 from importlib.metadata import PackageNotFoundError, version
 from typing import Any
 
@@ -36,15 +37,60 @@ class Embed:
     >>> e = Embed(title="Test", color=COLOR_INFO)
     >>> e.add_field("key", "value")
     Embed(title='Test', ...)
+
+    title / description / color / fields に加え、Discord embed の任意要素として
+    title リンク (``url``)、``timestamp``、``author`` / ``footer`` / ``thumbnail`` /
+    ``image`` をサポートする。これらは値があるときだけ payload に含まれる。
+    author / footer は複数のサブ項目を持つため、``set_author`` / ``set_footer`` の
+    fluent setter で組み立てる。
     """
 
     title: str = ""
     description: str = ""
+    url: str = ""
     color: int | None = None
+    timestamp: str | None = None
     fields: list[dict[str, str | bool]] = field(default_factory=list)
+    author: dict[str, str] | None = None
+    footer: dict[str, str] | None = None
+    thumbnail: dict[str, str] | None = None
+    image: dict[str, str] | None = None
 
     def add_field(self, name: str, value: str, *, inline: bool = False) -> Embed:
         self.fields.append({"name": name, "value": value, "inline": inline})
+        return self
+
+    def set_author(self, name: str, *, url: str = "", icon_url: str = "") -> Embed:
+        """author (アイコン+名前の小見出し行) を設定する。空のサブ項目は省く。"""
+        author: dict[str, str] = {"name": name}
+        if url:
+            author["url"] = url
+        if icon_url:
+            author["icon_url"] = icon_url
+        self.author = author
+        return self
+
+    def set_footer(self, text: str, *, icon_url: str = "") -> Embed:
+        """footer (最下部の小さなテキスト) を設定する。"""
+        footer: dict[str, str] = {"text": text}
+        if icon_url:
+            footer["icon_url"] = icon_url
+        self.footer = footer
+        return self
+
+    def set_thumbnail(self, url: str) -> Embed:
+        """thumbnail (右上の小さな画像) を設定する。"""
+        self.thumbnail = {"url": url}
+        return self
+
+    def set_image(self, url: str) -> Embed:
+        """image (下部の大きな画像) を設定する。"""
+        self.image = {"url": url}
+        return self
+
+    def set_timestamp(self, value: str | datetime) -> Embed:
+        """timestamp を設定する。datetime を渡すと ISO8601 文字列に変換する。"""
+        self.timestamp = value.isoformat() if isinstance(value, datetime) else value
         return self
 
     def to_dict(self) -> dict[str, Any]:
@@ -53,8 +99,20 @@ class Embed:
             d["title"] = self.title
         if self.description:
             d["description"] = self.description
+        if self.url:
+            d["url"] = self.url
         if self.color is not None:
             d["color"] = self.color
+        if self.timestamp:
+            d["timestamp"] = self.timestamp
+        if self.author:
+            d["author"] = self.author
+        if self.thumbnail:
+            d["thumbnail"] = self.thumbnail
+        if self.image:
+            d["image"] = self.image
+        if self.footer:
+            d["footer"] = self.footer
         if self.fields:
             d["fields"] = self.fields
         return d

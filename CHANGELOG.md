@@ -20,6 +20,13 @@
 
 ## [Unreleased]
 
+### Added
+
+- `Embed` に Discord embed の任意要素を追加する: title リンク (`url`)、`timestamp`、`author` / `footer` / `thumbnail` / `image`
+- `Embed.set_author` / `set_footer` / `set_thumbnail` / `set_image` / `set_timestamp` の fluent setter を追加する (`add_field` と同様に `self` を返す)。`set_timestamp` は `datetime` を渡すと ISO8601 文字列へ変換する
+
+これらはすべて任意で、未設定なら payload に含まれないため既存の利用は影響を受けない。
+
 ## [0.2.0] - 2026-06-29
 
 ### Added
