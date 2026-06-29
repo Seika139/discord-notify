@@ -19,6 +19,16 @@
 
 ## [Unreleased]
 
+### Added
+
+- `DiscordWebhook.send()` に `dry_run` 引数を追加し、HTTP 送信せず payload を INFO ログに出力できるようにする
+- `send()` が embed 10 件超を複数メッセージへ自動分割するようにし、Discord の 1 メッセージ最大 10 embed 制限に対応する
+- `send()` で `content` と `embeds` が両方空の場合に `ValueError` を送出し、400 が確定するリクエストを未然に防ぐ
+
+### Changed
+
+- **破壊的変更**: `send()` の戻り値を `int` から `list[int]` に変更する。分割送信した各リクエストの HTTP ステータスコードを送信順に返す (`dry_run` 時は空リスト)
+
 ## [0.1.5] - 2026-06-29
 
 ### Fixed
