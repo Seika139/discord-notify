@@ -9,13 +9,20 @@
 
 ## Tagged Releases
 
-- [unreleased](https://github.com/Seika139/discord-notify/compare/v0.1.3...HEAD)
+- [unreleased](https://github.com/Seika139/discord-notify/compare/v0.1.4...HEAD)
+- [0.1.4](https://github.com/Seika139/discord-notify/compare/v0.1.3...v0.1.4)
 - [0.1.3](https://github.com/Seika139/discord-notify/compare/v0.1.2...v0.1.3)
 - [0.1.2](https://github.com/Seika139/discord-notify/compare/v0.1.1...v0.1.2)
 - [0.1.1](https://github.com/Seika139/discord-notify/compare/v0.1.0...v0.1.1)
 - [0.1.0](https://github.com/Seika139/discord-notify/releases/tag/v0.1.0)
 
 ## [Unreleased]
+
+## [0.1.4] - 2026-06-29
+
+### Added
+
+- webhook URL の渡し方の注意とトラブルシューティングを README に追記し、環境変数の衝突で別チャンネルへ通知される問題や `username` 上書きの挙動を解説する
 
 ## [0.1.3] - 2026-04-21
 
