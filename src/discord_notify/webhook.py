@@ -19,6 +19,9 @@ except PackageNotFoundError:  # ソース直実行などで未インストール
 
 USER_AGENT = f"discord-notify/{__version__}"
 
+# Discord は 1 メッセージあたり最大 10 embed まで受け付ける。
+MAX_EMBEDS_PER_MESSAGE = 10
+
 # Discord embed color presets
 COLOR_SUCCESS = 0x2ECC71  # green
 COLOR_WARNING = 0xF1C40F  # yellow
@@ -91,9 +94,49 @@ class DiscordWebhook:
         self,
         content: str = "",
         embeds: list[Embed] | None = None,
-    ) -> int:
-        """Send a message to Discord. Returns the HTTP status code."""
-        payload = self.build_payload(content, embeds)
+        *,
+        dry_run: bool = False,
+    ) -> list[int]:
+        """Send a message to Discord, returning the HTTP status code of each request.
+
+        Discord は 1 メッセージ最大 10 embed のため、embed が 10 件を超える場合は
+        複数のメッセージに分割して送る (``content`` は最初のメッセージにのみ付く)。
+        戻り値は送信順の HTTP ステータスコードのリスト。
+
+        ``dry_run=True`` のときは HTTP 送信せず、各メッセージの payload を INFO ログに
+        出力して空リストを返す。
+
+        ``content`` と ``embeds`` が両方とも空の場合は、Discord が空ペイロードを 400 で
+        拒否するため、リクエストを送らず ``ValueError`` を送出する。
+        """
+        if not content and not embeds:
+            raise ValueError("content または embeds のいずれかを指定してください")
+        statuses: list[int] = []
+        for payload in self._build_payloads(content, embeds):
+            if dry_run:
+                logger.info("[dry_run] would POST: %s", json.dumps(payload, ensure_ascii=False))
+                continue
+            statuses.append(self._post(payload))
+        return statuses
+
+    def _build_payloads(
+        self,
+        content: str,
+        embeds: list[Embed] | None,
+    ) -> list[dict[str, Any]]:
+        """送信用 payload を組み立てる。embed が 10 件を超える場合は複数に分割する。"""
+        if not embeds:
+            return [self.build_payload(content)]
+        payloads: list[dict[str, Any]] = []
+        for i in range(0, len(embeds), MAX_EMBEDS_PER_MESSAGE):
+            chunk = embeds[i : i + MAX_EMBEDS_PER_MESSAGE]
+            # content は最初のメッセージにのみ付け、分割時の重複を避ける。
+            chunk_content = content if i == 0 else ""
+            payloads.append(self.build_payload(chunk_content, chunk))
+        return payloads
+
+    def _post(self, payload: dict[str, Any]) -> int:
+        """POST a single prebuilt payload to the webhook URL. Returns the HTTP status code."""
         data = json.dumps(payload).encode()
         req = urllib.request.Request(
             self.url,

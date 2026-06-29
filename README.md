@@ -49,7 +49,22 @@ embed.add_field("環境", "production", inline=True)
 embed.add_field("バージョン", "v1.2.3", inline=True)
 embed.add_field("デプロイ者", "CI/CD")
 
-webhook.send(embeds=[embed])
+statuses = webhook.send(embeds=[embed])
+# send() は送信した各リクエストの HTTP ステータスコードのリストを返す (例: [204])
+```
+
+embed が 10 件を超える場合、Discord の「1 メッセージ最大 10 embed」制限に合わせて複数メッセージへ自動分割して送る (`content` は最初のメッセージにのみ付く)。戻り値のリストには分割した各リクエストのステータスが送信順に入る。
+
+### 送信せずに動作確認する (dry_run)
+
+`dry_run=True` を渡すと HTTP 送信せず、送られるはずの payload を INFO ログに出力する。戻り値は空リストになる。
+
+```python
+import logging
+
+logging.basicConfig(level=logging.INFO)
+webhook.send(embeds=[embed], dry_run=True)
+# INFO discord_notify.webhook: [dry_run] would POST: {"username": ..., "embeds": [...]}
 ```
 
 ### カラー定数
