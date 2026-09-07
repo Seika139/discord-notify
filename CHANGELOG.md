@@ -21,6 +21,11 @@
 
 ## [Unreleased]
 
+### Added
+
+- `lint-yaml.yml` ワークフローを追加し、yamllint による検証を CI に組み込む。github-actions エコシステムの Dependabot 更新 PR はワークフローファイルのみを変更するため `uv-qualify` の変更検知に掛からず、変更検知でスキップされた job は失敗ではなく成功として扱われることから、これまで実質無検証のままマージされ得る状態だった
+- `dependabot-auto-merge.yml` ワークフローを追加し、CI が通った Dependabot PR を自動マージできるようにする
+
 ## [0.3.0] - 2026-06-29
 
 ### Added

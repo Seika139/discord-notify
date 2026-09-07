@@ -1,0 +1,15 @@
+---
+name: Lint YAML (reusable)
+
+"on":
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  call-common-yamllint:
+    uses: Seika139/.github/.github/workflows/lint-yaml.yml@main
+    secrets: inherit
