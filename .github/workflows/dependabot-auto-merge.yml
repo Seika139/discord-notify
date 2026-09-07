@@ -1,0 +1,17 @@
+---
+name: Dependabot Auto Merge (reusable)
+
+"on":
+  pull_request:
+
+permissions:
+  contents: write # auto-merge の予約に必要
+  pull-requests: write # PR の更新に必要
+
+jobs:
+  call-dependabot-auto-merge:
+    # Dependabot 以外の PR ではそもそも実体を呼び出さない
+    if: github.event.pull_request.user.login == 'dependabot[bot]'
+    uses: Seika139/.github/.github/workflows/dependabot-auto-merge.yml@main
+    with:
+      merge_method: merge
