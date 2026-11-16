@@ -39,4 +39,4 @@ strict = true
 exclude = ["^build/", "^\\.venv/"]
 
 [dependency-groups]
-dev = ["mypy>=2.4.1", "pytest>=9.2.0", "ruff>=0.17.3", "ty>=0.0.95"]
+dev = ["mypy>=2.4.1", "pytest>=9.2.0", "ruff>=0.17.4", "ty>=0.0.99"]
